@@ -1,3 +1,12 @@
+const int testvar1 = 44 ;
+restrict volatile short testvar2 = 7 ;
+extern float test3() ;
+
+static float test4(int x){
+    if(x%5 == 0) return (x/4) ;
+    return x/5 ;
+}
+
 int main(){
     
     int x = 6 ;
