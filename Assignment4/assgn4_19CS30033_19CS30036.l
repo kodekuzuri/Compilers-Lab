@@ -1,3 +1,9 @@
+/*
+Name: Parth Jindal, Pranav Rajput
+Course: CS39003
+Group: 
+*/
+
 %{
     #include "y.tab.h"
 %}
@@ -6,16 +12,6 @@
 /*until newline*/
 SINGLE_LINE_COMMENT     "//"[^\n]*
 MULTI_LINE_COMMENT      "/*"[^"*"]*"*"("*"|([^"/*"]*[^"*"]*"*"))*"/"
-
-
-/*KEYWORDS(For convenience written on different lines)*/
-KEYWORD_1            "auto"|"enum"|"restrict"|"unsigned"|"break"|"extern"|"return"|"void"
-KEYWORD_2            "case"|"float"|"short"|"volatile"|"char"|"for"|"signed"|"while"
-KEYWORD_3            "const"|"goto"|"sizeof"|"_Bool"|"continue"|"if"|"static"|"_Complex"
-KEYWORD_4            "default"|"inline"|"struct"|"_Imaginary"|"do"|"int"|"switch"|"double"
-KEYWORD_5            "long"|"typedef"|"else"|"register"|"union"
-KEYWORD              {KEYWORD_1}|{KEYWORD_2}|{KEYWORD_3}|{KEYWORD_4}|{KEYWORD_5}
-
 
 DIGIT               [0-9]
 DIGIT_SEQ           {DIGIT}+
@@ -40,33 +36,20 @@ CHAR_CONSTANT          \'({C_CHAR_SEQ})\'
 
 S_CHAR                 {ESCAPE_SEQ}|[^("\n"|"\""|"\\")]
 S_CHAR_SEQ             {S_CHAR}+
-S_LITERAL              \"({S_CHAR_SEQ})\"
-
-
-/*PUNCTUATORS*/
-PUNCTUATOR			    "["|"]"|"("|")"|"{"|"}"|"."|"->"|"++"|"--"|"&"|"*"|"+"|"-"|"~"|"!"|"/"|"%"|"<<"|">>"|"<"|">"|"<="|">="|"=="|"!="|"^"|"|"|"&&"|"||"|"?"|":"|";"|"..."|"="|"*="|"/="|"%="|"+="|"-="|"<<="|">>="|"&="|"^="|"|="|","|"#"
-
+S_LITERAL              \"({S_CHAR_SEQ})?\"
 WS                     [ \t\n\v\f]
 
-
 %%
-
-{S_LITERAL}                 { return STRING_LITERAL ; }
-{IDENTIFIER}                { return IDENTIFIER ; }
-{FLOATING_CONSTANT}         { return FLOATING_CONSTANT ; }
-{INTEGER_CONSTANT}          { return INTEGER_CONSTANT ; }
-{CHAR_CONSTANT}             { return CHARACTER_CONSTANT ; }
+\n                          { yylineno++;}
 {WS}                        { ; }
 {SINGLE_LINE_COMMENT}       { ; }
 {MULTI_LINE_COMMENT}        { ; }
 
 "sizeof"                    { return SIZEOF ; }
-
 "extern"                    { return EXTERN ; }
 "static"                    { return STATIC ; }
 "auto"                      { return AUTO ; }
 "register"                  { return REGISTER ; }
-
 "void"                      { return VOID ; }
 "char"                      { return CHAR ; }
 "short"                     { return SHORT ; }
@@ -76,22 +59,18 @@ WS                     [ \t\n\v\f]
 "double"                    { return DOUBLE ; }
 "signed"                    { return SIGNED ; }
 "unsigned"                  { return UNSIGNED ; }
-"_Bool"                     { return _BOOL  ; }
-"_Complex"                  { return _COMPLEX  ; }
-"_Imaginary"                { return _IMAGINARY ; }
-
+"_Bool"                     { return BOOL  ; }
+"_Complex"                  { return COMPLEX  ; }
+"_Imaginary"                { return IMAGINARY ; }
 "enum"                      { return ENUM ; }
-
-"case"                      { return CASE ; }
+"case"                      { return CASE ;  }
 "default"                   { return DEFAULT ; }
-
-
 "const"                     { return CONST ; }
 "restrict"                  { return RESTRICT ; }
 "volatile"                  { return VOLATILE ; }
-
+"union"                     { return UNION ; } 
 "inline"                    { return INLINE ; }
-
+"typedef"                   { return TYPEDEF ; }
 "if"                        { return IF ; }
 "else"                      { return ELSE ; }
 "switch"                    { return SWITCH ; }
@@ -103,62 +82,60 @@ WS                     [ \t\n\v\f]
 "break"                     { return BREAK ; }
 "return"                    { return RETURN ; }
 
+{IDENTIFIER}                { return IDENTIFIER ; }
 
-"{"                         { return '{' ; }
-"}"                         { return '}' ; }
+{INTEGER_CONSTANT}          { return INTEGER_CONSTANT ; }
+{FLOATING_CONSTANT}         { return FLOATING_CONSTANT ; }
 
-"("                         { return '(' ; }
-")"                         { return ')' ; }
+{CHAR_CONSTANT}             { return CHARACTER_CONSTANT ; }
+{S_LITERAL}                 { return STRING_LITERAL ; }
 
-"["                         { return '[' ; }
-"]"                         { return ']' ; }
-
-"="                         { return '=' ; }
-"*"                         { return '*' ; }
-","                         { return ',' ; }
-"."                         { return '.' ; }
-";"                         { return ';' ; }
-":"                         { return ':' ; }
-
-"&"                         { return '&' ; }
-"+"                         { return '+' ; }
-"-"                         { return '-' ; }
-"~"                         { return '~' ; }
-"!"                         { return '!' ; }
-
-"<"                         { return '<' ; }
-">"                         { return '>' ; }
-"/"                         { return '/' ; }
-"%"                         { return '%' ; }
-"^"                         { return '^' ; }
-"|"                         { return '|' ; }
-"#"                         { return '#' ; }
-"?"                         { return '?' ; }
-
-
-"..."                       { return ELLIPSIS ; }
-
-"--"                        { return UNARY_DECREMENT ; }
-"++"                        { return UNARY_INCREMENT  ; }
-
-"->"                        { return ARROW ; }
-">>"                        { return SHIFT_RIGHT  ; }
-"<<"                        { return SHIFT_LEFT ; }
-"<="                        { return LEQ ; }
-">="                        { return REQ ; }
-"=="                        { return EQUAL ; }
-"!="                        { return NOT_EQUAL ; }
-"&&"                        { return AND ; }
-"||"                        { return OR ; }
-"*="                        { return MUL_COMPOUND  ; }
-"/="                        { return DIV_COMPOUND ; }
-"%="                        { return MOD_COMPOUND ; }
-"-="                        { return SUB_COMPOUND ; }
-"+="                        { return ADD_COMPOUND ; }
-"&="                        { return AND_COMPOUND ; }
-"|="                        { return OR_COMPOUND ; }
-"^="                        { return XOR_COMPOUND ; }
-">>="                       { return RSHIFT_COMPOUND ; }
-"<<="                       { return LSHIFT_COMPOUND ; }
+"["					{ return '['; }
+"]"					{ return ']'; }
+"("					{ return '('; }
+")"					{ return ')'; }
+"{"					{ return '{'; }
+"}"					{ return '}'; }
+"."					{ return DOT; }
+"->"				{ return ARROW; }
+"++"				{ return INCREMENT; }
+"--"				{ return DECREMENT; }
+"&"					{ return BITWISEAND; }
+"*"					{ return STAR; }
+"+"					{ return PLUS; }
+"-"					{ return MINUS; }
+"~"					{ return NOT; }
+"!"					{ return EXCLAMATION; }
+"/"					{ return DIVIDE; }
+"%"					{ return PERCENTAGE; }
+"<<"				{ return LEFTSHIFT; }
+">>"				{ return RIGHTSHIFT; }
+"<"					{ return LESSTHAN; }
+">"					{ return GREATERTHAN; }
+"<="				{ return LESSEQUAL; }
+">=" 				{ return GREATEREQUAL; }
+"=="				{ return EQUAL; }
+"!="				{ return NOTEQUAL; }
+"^"					{ return XOR; }
+"|"					{ return BITWISEOR; }
+"&&"				{ return AND; }
+"||"				{ return OR; }
+"?"					{ return QUESTIONMARK; }
+":"					{ return COLON; }
+";"					{ return SEMICOLON; }
+"..."				{ return ELLIPSIS; }
+"="					{ return ASSIGN; }
+"*="				{ return MULTIPLYEQUAL; }
+"/="				{ return DIVIDEEQUAL; }
+"%="				{ return MODULOEQUAL; }
+"+="				{ return PLUSEQUAL; }
+"-="				{ return MINUSEQUAL; }
+"<<="				{ return SHIFTLEFTEQUAL; }
+">>="				{ return SHIFTRIGHTEQUAL; }
+"&="				{ return ANDEQUAL; }
+"^="				{ return XOREQUAL; }
+"|="				{ return OREQUAL; }
+","					{ return COMMA; }
+"#" 				{ return HASH; }
 
 %%

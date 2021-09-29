@@ -1,35 +1,48 @@
-const int testvar1 = 44 ;
-restrict volatile short testvar2 = 7 ;
-extern float test3() ;
-
-static float test4(int x){
-    if(x%5 == 0) return (x/4) ;
-    return x/5 ;
+volatile int test_var;
+extern int func_1();
+double func_2(double a, double b) {
+    return a + b;
 }
 
-int main(){
-    
-    int x = 6 ;
-    float fNum = 365.77e-2 ;
-    char testString[100] = "This is a program for testing the bison specification\n" ;
-    double dNum = 33.76 ;
-    char cTest = 'a' ;
+static char func_3(char a, char b) {
+    return a + b - 2 + 4;
+}
 
-
-    for(int i = 0 ; i < 4 ; i++){
-        for(int j = i + 1 ; j < 7 ; j++)
-            x++ ;
+void for_loop() {
+    int i;
+    for (i = 0; i < 10; i++) {
+        test_var = i;
     }
+}
 
-    while(fNum > 0){
-        fNum-- ;
-        dNum-- ;
+/**
+ * @brief This is the main function,
+ * This is a multiline comment
+ */
+void main() {
+    float f = 945.2e-2;
+    // My name (single line comment)
+    char name[20] = "Parth Jindal\t\t";
+    int i = 0;
+    for (i = 0; i < 20; i++) {
+        test_var = i;
     }
+    char arr[4] = "";
 
-    do{
-        x-=4 ;
-        dNum++ ;
-    }while(x > 0) ;
+    while (i < 20) {
+        test_var = i;
+        i++;
+    }
+    do {
+        i++;
+    } while (i < 100);
+    _Bool b = 1;
+    _Imaginary i1 = 1;
+    _Complex c = 1;
+    int xas = func_1();
+    func_2(1, 2);
+    char x = func_3('a', 'b');
 
-    return 0 ;
+    for_loop();
+    main();
 }
