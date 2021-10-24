@@ -5,8 +5,18 @@ Group:
 */
 
 %{
+    #include <stdio.h>
+    #include <string.h>
+    #include "ass5_19CS30033_19CS30036_translator.h"
     #include "y.tab.h"
+
+    extern YYSTYPE yylval;
+    extern int yylex();
+    extern int yylineno;
 %}
+
+%option noyywrap
+
 
 /*Regex Definitions*/
 /*until newline*/
@@ -36,7 +46,9 @@ S_CHAR                 {ESCAPE_SEQ}|[^("\n"|"\""|"\\")]
 S_CHAR_SEQ             {S_CHAR}+
 S_LITERAL              \"({S_CHAR_SEQ})?\"
 WS                     [ \t\n\v\f]
+
 %%
+
 \n                          { yylineno++;}
 {WS}                        { ; }
 {SINGLE_LINE_COMMENT}       { ; }
@@ -77,11 +89,26 @@ WS                     [ \t\n\v\f]
 "continue"                  { return CONTINUE ; }
 "break"                     { return BREAK ; }
 "return"                    { return RETURN ; }
-{IDENTIFIER}                { return IDENTIFIER ; }
-{INTEGER_CONSTANT}          { return INTEGER_CONSTANT ; }
-{FLOATING_CONSTANT}         { return FLOATING_CONSTANT ; }
-{CHAR_CONSTANT}             { return CHARACTER_CONSTANT ; }
-{S_LITERAL}                 { return STRING_LITERAL ; }
+
+{IDENTIFIER}                {   yylval.symb = ST->lookup(yylval.symb);                
+                                return IDENTIFIER ; 
+                            }
+
+{INTEGER_CONSTANT}          {   yylval.intVal = atoi(yylval.symb);
+                                return INTEGER_CONSTANT ; 
+                            }
+{FLOATING_CONSTANT}         {   yylval.floatVal = atof(yylval.symb);
+                                return FLOATING_CONSTANT ; 
+                            }
+
+{CHAR_CONSTANT}             {   yylval.char_val = yytext;
+                                return CHARACTER_CONSTANT ; 
+                            }
+
+{S_LITERAL}                 {   yylval.char_val = yytext;
+                                return STRING_LITERAL ; 
+                            }
+
 "["					{ return '['; }
 "]"					{ return ']'; }
 "("					{ return '('; }
