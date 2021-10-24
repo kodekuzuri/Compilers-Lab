@@ -40,6 +40,56 @@ symbol::symbol(string sname, string tt = "INT", symType* p, int ss){
     size = typeSize(s_type) ;
 }
 
-symbol* symbol::Update(){
+// update function
+symbol* symbol::Update(symTable* ts){
+
+    this->size = TypeSize(ts) ;
+    s_type = ts ;
+
+    return this ;
+}
+
+// END OF DEFINITION OF CLASS symbol
+
+
+// IMPLEMENTING quad CLASS FUNCTIONS
+//constructor
+quad::quad(string res, string arg1, string op, string arg2){
+    this->res = res ;
+    this->arg1 = arg1 ;
+    this->op = op ;
+    this->arg2 = arg2 ;
+}
+
+quad::quad(string res, int arg1, string op, string arg2){
+    this->res = res ;
+    this->arg1 = to_string(arg1) ;
+    this->op = op ;
+    this->arg2 = arg2 ;
+}
+
+quad::quad(string res, float arg1, string op, string arg2){
+    this->res = res ;
+    this->arg1 = to_string(arg1) ;
+    this->op = op ;
+    this->arg2 = arg2 ;
+}
+
+void quad::PRINT(){
 
 }
+
+// END OF DEFINITION OF CLASS quad
+
+// IMPLEMENTING symTable CLASS FUNCTIONS
+
+//constructor
+symType::symType(string type, symType* p, int width) : type(type), p(p), width(width){}
+
+// END OF DEFINITION OF CLASS symTable 
+
+// IMPLEMENTING quadArray CLASS FUNCTIONS
+
+
+
+// END OF DEFINITION OF CLASS quadArray
