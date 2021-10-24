@@ -79,7 +79,7 @@ class symbol{
     symbol(string sname, string tt = "INT", symbolType* p = NULL, int ss = 0) ;
 
     //function to update any symbol
-    Update(symbolType* ts) ;
+    symbol* Update(symbolType* ts) ;
 };
 
 //--CLASS QUAD
