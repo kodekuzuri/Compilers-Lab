@@ -358,13 +358,19 @@ string typeGet(symType* T) {
 }
 
 int main() {
-    ST = new symTable("Main");
-    symbol s1 = symbol("a", "int", new symType("int"), 0);
-    ST->table.push_back(s1);
-    symbol s2 = symbol("b", "int", new symType("int"), 0);
-    ST->table.push_back(s2);
-    ST->update();
-    ST->print();
+    labelList.clear();
+    tableCount = 0;
+    globalST = new symTable("Global");
+    ST = globalST;
+    parST = NULL;
+    loopName = "";
+
+    yyparse();
+    globalST->update();
+    cout << "\n";
+
+    QArray.print();
+    globalST->print();
 }
 
 // END OF DEFINITION OF CLASS quad

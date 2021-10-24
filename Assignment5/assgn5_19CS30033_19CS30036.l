@@ -7,8 +7,8 @@ Group:
 %{
     #include <stdio.h>
     #include <string.h>
-    #include "ass5_19CS30033_19CS30036_translator.h"
-    #include "y.tab.h"
+    #include "assgn5_19CS30033_19CS30036_translator.h"
+    #include "assgn5_19CS30033_19CS30036.tab.h"
 
     extern YYSTYPE yylval;
     extern int yylex();
@@ -90,22 +90,22 @@ WS                     [ \t\n\v\f]
 "break"                     { return BREAK ; }
 "return"                    { return RETURN ; }
 
-{IDENTIFIER}                {   yylval.symb = ST->lookup(yylval.symb);                
+{IDENTIFIER}                {   yylval.sym = ST->lookup(yytext);                
                                 return IDENTIFIER ; 
                             }
 
-{INTEGER_CONSTANT}          {   yylval.intVal = atoi(yylval.symb);
+{INTEGER_CONSTANT}          {   yylval.intVal = atoi(yytext);
                                 return INTEGER_CONSTANT ; 
                             }
-{FLOATING_CONSTANT}         {   yylval.floatVal = atof(yylval.symb);
+{FLOATING_CONSTANT}         {   yylval.floatVal = atof(yytext);
                                 return FLOATING_CONSTANT ; 
                             }
 
-{CHAR_CONSTANT}             {   yylval.char_val = yytext;
+{CHAR_CONSTANT}             {   yylval.charVal = yytext;
                                 return CHARACTER_CONSTANT ; 
                             }
 
-{S_LITERAL}                 {   yylval.char_val = yytext;
+{S_LITERAL}                 {   yylval.charVal = yytext;
                                 return STRING_LITERAL ; 
                             }
 
