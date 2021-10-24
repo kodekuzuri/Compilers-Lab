@@ -5,7 +5,7 @@ ASSIGNMENT: 5
 */
 
 // including the custom header file
-#include "assgn5_19CS30033_19CS30036_translator.h"
+#include "1.h"
 
 // including built-in libraries
 #include <bits/stdc++.h>
@@ -31,6 +31,15 @@ string varType ;
 // IMPLEMENTING symbol CLASS FUNCTIONS
 
 // constructor
-symbol::symbol(string sname, string tt = "INT", symbolType* p, int ss){
+symbol::symbol(string sname, string tt = "INT", symType* p, int ss){
+    name = sname ;
+    s_type = new symType(tt, p, ss) ;
+    iVal = "" ;
+    nestedST = NULL ;
+    offset = 0 ;
+    size = typeSize(s_type) ;
+}
+
+symbol* symbol::Update(){
 
 }
