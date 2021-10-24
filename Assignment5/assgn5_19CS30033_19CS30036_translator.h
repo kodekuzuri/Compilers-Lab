@@ -88,17 +88,17 @@ class quad{
 public:
     // res = arg2 op arg1
     string res ;
-    string arg2 ;
-    string op ;
     string arg1 ;
+    string op ;
+    string arg2 ;
 
     // function to print the current quad
     void PRINT() ;
 
     // Constructors for quad initialization
-    quad(string res, string arg2, string op = "=", string arg1 = "");
-    quad(string res, float arg2, string op = "=", string arg1 = "");
-    quad(string res, int arg2, string op = "=", string arg1 = "");
+    quad(string res, string arg1, string op = "=", string arg2 = "");
+    quad(string res, float arg1, string op = "=", string arg2 = "");
+    quad(string res, int arg1, string op = "=", string arg2 = "");
 };
 
 
