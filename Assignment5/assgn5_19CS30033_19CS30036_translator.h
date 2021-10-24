@@ -59,7 +59,7 @@ class symbol{
     string name ;
 
     // type of symbol
-    symbolType* s_type ;
+    symType* s_type ;
 
     // to store any initial value present for the symbol
     string iVal ;
@@ -76,10 +76,10 @@ class symbol{
     //member functions
     
     //Class constructor for initizalization 
-    symbol(string sname, string tt = "INT", symbolType* p = NULL, int ss = 0) ;
+    symbol(string sname, string tt = "INT", symType* p = NULL, int ss = 0) ;
 
     //function to update any symbol
-    symbol* Update(symbolType* ts) ;
+    symbol* Update(symType* ts) ;
 };
 
 //--CLASS QUAD
