@@ -40,17 +40,15 @@ struct expression;
 struct statement;
 struct Array;
 
-// Pointer to current symbol
 extern symbol* currS;
-// current symbol table for the code
+
 extern symTable* ST;
-// global Symbol Table
+extern symTable* parST;
 extern symTable* globalST;
-// array of quads for the ones in the code
+
 extern quadArray QArray;
 extern std::string varType;
 extern std::string loopName;
-extern symTable* parST;
 extern long long int tableCount;
 extern std::vector<label> labelList;
 
@@ -165,7 +163,7 @@ void emit(string op, string res, float arg1, string arg2 = "");
 symbol* gentemp(symType* T, string initVal = "");
 
 // inserting target label into group of quads i.e. list<int> L
-void backpatch(list<int>& L, int i);
+void backpatch(list<int> L, int i);
 // making a new list with only the integer address passed as parameter
 list<int> makelist(int i);
 // function to merge the 2 lists L1 and L2 passed as parameters

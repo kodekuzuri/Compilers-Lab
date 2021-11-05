@@ -46,31 +46,34 @@ symbol* symbol::update(symType* ptr) {
     return this;
 }
 
-symType::symType(string type_, symType* ptr, int width_) {
+symType::symType(string type_, symType* ptr_, int width_) {
     this->type = type_;
-    this->ptr = ptr;
-    this->width = width;
+    this->ptr = ptr_;
+    this->width = width_;
 }
 
 label::label(string name_, int addr_) : name(name_), addr(addr_) {}
 
-symTable::symTable(string name_) : name(name_), count(0) {}
+symTable::symTable(string name_) : name(name_), count(0) {
+    this->parent = NULL;
+}
 
 symbol* symTable::lookup(string name_) {
-    symbol* s;
+    symbol* s = NULL;
     for (auto it = this->table.begin(); it != this->table.end(); it++) {
         if (it->name == name_)
             return &(*it);
     }
-    if (this->parent != NULL)
+    if (this->parent != NULL) {
         s = this->parent->lookup(name_);
+    }
     if (ST == this && s == NULL) {
-        s = new symbol(name);
+        s = new symbol(name_);
         this->table.push_back(*s);
         return &(this->table.back());
-    } else if (s != NULL)
+    } else if (s != NULL) {
         return s;
-    else
+    } else
         return NULL;
 }
 
@@ -88,23 +91,28 @@ void symTable::update() {
 }
 
 void symTable::print() {
-    cout << "_______________________" << endl;
+    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
+    std::cout << std::endl;
     cout << "Table-Name: " << this->name << "   ";
     cout << "Parent Table-Name: " << (this->parent == NULL ? "NULL" : this->parent->name) << endl;
     cout << "Name"
          << "\t"
          << "Type"
          << "\t"
+         << "InVal"
+         << "\t"
          << "Offset"
          << "\t"
          << "Size"
          << "\t"
-         << "Nested Table" << endl;
+         << "Nes-ST" << endl;
     vector<symTable*> tablePtrs;
     for (auto it = this->table.begin(); it != this->table.end(); it++) {
         cout << it->name
              << "\t"
-             << it->type->type
+             << typeGet(it->type)
+             << "\t"
+             << it->val
              << "\t"
              << it->offset
              << "\t"
@@ -115,7 +123,8 @@ void symTable::print() {
         if (it->nestedST != NULL)
             tablePtrs.push_back(it->nestedST);
     }
-
+    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
+    cout << endl;
     for (auto it = tablePtrs.begin(); it != tablePtrs.end(); it++)
         (*it)->print();
 }
@@ -167,18 +176,21 @@ void quad::print() {
 }
 
 void quadArray::print() {
+    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
     cout << "THREE ADDRESS CODE(TAC)" << endl;
     int i = 0;
-    for (auto it = this->array.begin(); it != this->array.end(); it++) {
+    for (auto it = this->array.begin(); it != this->array.end(); it++, i++) {
         if (it->op == "label") {
             cout << "\n"
                  << i << ": ";
             it->print();
         } else {
-            cout << i << ": ";
+            cout << i << ":   ";
             it->print();
         }
     }
+    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
+    std::cout << std::endl;
 }
 
 void emit(string op, string res, string arg1, string arg2) {
@@ -215,7 +227,7 @@ label* findLabel(string name) {
     return NULL;
 }
 
-void backpatch(list<int>& L, int i) {
+void backpatch(list<int> L, int i) {
     string s = to_string(i);
     for (auto it = L.begin(); it != L.end(); it++) {
         QArray.array[*it].res = s;
