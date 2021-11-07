@@ -5,7 +5,7 @@ ASSIGNMENT: 5
 */
 
 // including the custom header file
-#include "assgn5_19CS30033_19CS30036_translator.h"
+#include "assgn6_19CS30033_19CS30036_translator.h"
 
 // including built-in libraries
 #include <bits/stdc++.h>
@@ -21,11 +21,7 @@ symTable* ST;
 symTable* globalST;
 // array of quads for the ones in the code
 quadArray QArray;
-std::string varType;
-std::string loopName;
-symTable* parST;
-long long int tableCount;
-std::vector<label> labelList;
+string varType;
 
 // IMPLEMENTING symbol CLASS FUNCTIONS
 
@@ -37,6 +33,7 @@ symbol::symbol(string name_, string type_,
     this->type = new symType(type_, ptr, width);
     this->size = typeSize(this->type);
     this->val = "";
+    this->cat = "";
 }
 
 // update function
@@ -64,17 +61,10 @@ symbol* symTable::lookup(string name_) {
         if (it->name == name_)
             return &(*it);
     }
-    if (this->parent != NULL) {
-        s = this->parent->lookup(name_);
-    }
-    if (ST == this && s == NULL) {
-        s = new symbol(name_);
-        this->table.push_back(*s);
-        return &(this->table.back());
-    } else if (s != NULL) {
-        return s;
-    } else
-        return NULL;
+    s = new symbol(name_);
+    s->cat = "local";
+    this->table.push_back(*s);
+    return &(this->table.back());
 }
 
 void symTable::update() {
@@ -91,7 +81,7 @@ void symTable::update() {
 }
 
 void symTable::print() {
-    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
+    std::cout << setw(120) << setfill('-') << "-" << endl;
     std::cout << std::endl;
     cout << "Table-Name: " << this->name << "   ";
     cout << "Parent Table-Name: " << (this->parent == NULL ? "NULL" : this->parent->name) << endl;
@@ -99,18 +89,22 @@ void symTable::print() {
          << "\t"
          << "Type"
          << "\t"
+         << "Category"
+         << "\t"
          << "InVal"
          << "\t"
          << "Offset"
          << "\t"
          << "Size"
          << "\t"
-         << "Nes-ST" << endl;
+         << "NestedST" << endl;
     vector<symTable*> tablePtrs;
     for (auto it = this->table.begin(); it != this->table.end(); it++) {
         cout << it->name
              << "\t"
              << typeGet(it->type)
+             << "\t"
+             << it->cat
              << "\t"
              << it->val
              << "\t"
@@ -123,8 +117,7 @@ void symTable::print() {
         if (it->nestedST != NULL)
             tablePtrs.push_back(it->nestedST);
     }
-    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
-    cout << endl;
+    std::cout << setw(120) << setfill('-') << "-" << endl;
     for (auto it = tablePtrs.begin(); it != tablePtrs.end(); it++)
         (*it)->print();
 }
@@ -134,56 +127,111 @@ quad::quad(string res_, string arg1_,
                                        arg1(arg1_),
                                        op(op_),
                                        arg2(arg2_) {}
+//TODO : RENAME SYMBOLS
 void quad::print() {
-    static vector<string> binOps = {"+", "-", "*", "/", "%", "|", "^", "&", ">>", "<<"};
-    if (find(binOps.begin(), binOps.end(), this->op) != binOps.end())
-        cout << this->res << " = " << this->arg1 << " " << this->op << " " << this->arg2 << endl;
-    //RELATIONAL OPERATORS
-    else if (op == "==" || op == "!=" || op == "<=" || op == "<" || op == ">=")
-        cout << "if " << arg1 << " " << op << " " << arg2 << " goto " << res << endl;
-    else if (op == "goto")
-        cout << "goto " << res << endl;
-    else if (op == "=")
-        cout << res << " = " << arg1 << endl;
-    else if (op == "=&")
-        cout << res << " = &" << arg1 << endl;
-    else if (op == "=*")
-        cout << res << " = *" << arg1 << endl;
-    // else if (op == "*=")
-    //     cout << res << " = " << arg1 << " * " << arg2 << endl;
-    else if (op == "uminus")
-        cout << res << " = -" << arg1 << endl;
-    else if (op == "~")
-        cout << res << " = ~" << arg1 << endl;
-    else if (op == "!")
-        cout << res << " = !" << arg1 << endl;
+    ///////////////////////////////////////
+    //         SHIFT OPERATORS           //
+    ///////////////////////////////////////
 
-    // EXTRA OPERATORS
-    else if (op == "=[]")
-        cout << res << " = " << arg1 << "[" << arg2 << "]" << endl;
-    else if (op == "[]=")
-        cout << res << "[" << arg1 << "] = " << arg2 << endl;
-    else if (op == "return")
-        cout << "return " << res << endl;
-    else if (op == "param")
-        cout << "param" << res << endl;
-    else if (op == "call")
-        cout << res << " = call " << arg1 << " " << arg2 << endl;
-    else if (op == "label")
-        cout << res << ": " << endl;
+    if (op == "LEFTOP")
+        std::cout << res << " = " << arg1 << " << " << arg2;
+    else if (op == "RIGHTOP")
+        std::cout << res << " = " << arg1 << " >> " << arg2;
+    else if (op == "EQUAL")
+        std::cout << res << " = " << arg1;
+
+    ///////////////////////////////////////
+    //          BINARY OPERATORS         //
+    ///////////////////////////////////////
+
+    else if (op == "ADD")
+        std::cout << res << " = " << arg1 << " + " << arg2;
+    else if (op == "SUB")
+        std::cout << res << " = " << arg1 << " - " << arg2;
+    else if (op == "MULT")
+        std::cout << res << " = " << arg1 << " *" << arg2;
+    else if (op == "DIVIDE")
+        std::cout << res << " = " << arg1 << " / " << arg2;
+    else if (op == "MODOP")
+        std::cout << res << " = " << arg1 << " % " << arg2;
+    else if (op == "XOR")
+        std::cout << res << " = " << arg1 << " ^ " << arg2;
+    else if (op == "INOR")
+        std::cout << res << " = " << arg1 << " | " << arg2;
+    else if (op == "BAND")
+        std::cout << res << " = " << arg1 << " &" << arg2;
+    ///////////////////////////////////////
+    //         UNARY OPERATORS           //
+    ///////////////////////////////////////
+
+    else if (op == "ADDRESS")
+        std::cout << res << " = &" << arg1;
+    else if (op == "PTRR")
+        std::cout << res << " = *" << arg1;
+    else if (op == "PTRL")
+        std::cout << "*" << res << " = " << arg1;
+    else if (op == "UMINUS")
+        std::cout << res << " = -" << arg1;
+    else if (op == "BNOT")
+        std::cout << res << " = ~" << arg1;
+    else if (op == "LNOT")
+        std::cout << res << " = !" << arg1;
+
+    ///////////////////////////////////////
+    //       RELATIONAL OPERATORS        //
+    ///////////////////////////////////////
+
+    else if (op == "EQOP")
+        std::cout << "if " << arg1 << " == " << arg2 << " goto " << res;
+    else if (op == "NEOP")
+        std::cout << "if " << arg1 << " != " << arg2 << " goto " << res;
+    else if (op == "LT")
+        std::cout << "if " << arg1 << "<" << arg2 << " goto " << res;
+    else if (op == "GT")
+        std::cout << "if " << arg1 << " > " << arg2 << " goto " << res;
+    else if (op == "GE")
+        std::cout << "if " << arg1 << " >= " << arg2 << " goto " << res;
+    else if (op == "LE")
+        std::cout << "if " << arg1 << " <= " << arg2 << " goto " << res;
+    else if (op == "GOTOOP")
+        std::cout << "goto " << res;
+
+    ///////////////////////////////////////
+    //         OTHER OPERATORS           //
+    ///////////////////////////////////////
+
+    else if (op == "ARRR")
+        std::cout << res << " = " << arg1 << "[" << arg2 << "]";
+    else if (op == "ARRL")
+        std::cout << res << "[" << arg1 << "]"
+                  << " = " << arg2;
+    else if (op == "RETURN")
+        std::cout << "ret " << res;
+    else if (op == "PARAM")
+        std::cout << "param " << res;
+    else if (op == "CALL")
+        std::cout << res << " = "
+                  << "call " << arg1 << ", " << arg2;
+    else if (op == "FUNC")
+        std::cout << res << ": ";
+    else if (op == "FUNCEND")
+        std::cout << "";
     else
-        cout << "undefined operator" << op << endl;
+        std::cout << op;
+    std::cout << endl;
 }
 
 void quadArray::print() {
-    for (int i = 0; i < 40; i++) std::cout << "__";  // End of printing of the TAC
+    for (int i = 0; i < 40; i++) std::cout << "__";
     cout << "THREE ADDRESS CODE(TAC)" << endl;
+    for (int i = 0; i < 40; i++) std::cout << "__";
     int i = 0;
     for (auto it = this->array.begin(); it != this->array.end(); it++, i++) {
-        if (it->op == "label") {
-            cout << "\n"
-                 << i << ": ";
+        if (it->op == "FUNC") {
+            cout << "\n";
             it->print();
+            cout << "\n";
+        } else if (it->op == "FUNCEND") {
         } else {
             cout << i << ":   ";
             it->print();
@@ -216,14 +264,12 @@ symbol* gentemp(symType* T, string initVal) {
     s->type = T;
     s->size = typeSize(T);
     s->val = initVal;
+    s->cat = "temp";
     ST->table.push_back(*s);
     return &ST->table.back();
 }
 
 label* findLabel(string name) {
-    for (auto it = labelList.begin(); it != labelList.end(); it++) {
-        if (it->name == name) return &(*it);
-    }
     return NULL;
 }
 
@@ -246,25 +292,25 @@ list<int> merge(list<int>& L1, list<int>& L2) {
 }
 
 expression* convertBool2Int(expression* e) {
-    if (e->type == "bool") {
-        e->loc = gentemp(new symType("int"));
+    if (e->type == "BOOL") {
+        e->loc = gentemp(new symType("INT"));
         backpatch(e->trueList, nextInstruction());
-        emit("=", e->loc->name, "true");
+        emit("EQUAL", e->loc->name, "true");
         int p = nextInstruction() + 1;
         string tmp = to_string(p);
-        emit("goto", tmp);
+        emit("GOTOOP", tmp);
         backpatch(e->falseList, nextInstruction());
-        emit("=", e->loc->name, "false");
+        emit("EQUAL", e->loc->name, "false");
     }
     return e;
 }
 
 expression* convertInt2Bool(expression* e) {
-    if (e->type != "bool") {
+    if (e->type != "BOOL") {
         e->falseList = makelist(nextInstruction());
-        emit("=", e->loc->name, "0");
+        emit("EQOP", e->loc->name, "0");
         e->trueList = makelist(nextInstruction());
-        emit("goto", "");
+        emit("GOTOOP", "");
     }
     return e;
 }
@@ -300,30 +346,30 @@ void changeTable(symTable* Table) {
 
 symbol* convert(symbol* s, string type) {
     symbol* tmp = gentemp(new symType(type));
-    if (s->type->type == "float") {
-        if (type == "int") {
-            emit("=", tmp->name, "float2int(" + s->name + ")");
+    if (s->type->type == "FLOAT") {
+        if (type == "INT") {
+            emit("EQUAL", tmp->name, "float2int(" + s->name + ")");
             return tmp;
-        } else if (type == "char") {
-            emit("=", tmp->name, "float2char(" + s->name + ")");
-            return tmp;
-        }
-        return s;
-    } else if (s->type->type == "int") {
-        if (type == "float") {
-            emit("=", tmp->name, "int2float(" + s->name + ")");
-            return tmp;
-        } else if (type == "char") {
-            emit("=", tmp->name, "int2char(" + s->name + ")");
+        } else if (type == "CHAR") {
+            emit("EQUAL", tmp->name, "float2char(" + s->name + ")");
             return tmp;
         }
         return s;
-    } else if (s->type->type == "char") {
-        if (type == "float") {
-            emit("=", tmp->name, "char2float(" + s->name + ")");
+    } else if (s->type->type == "INT") {
+        if (type == "FLOAT") {
+            emit("EQUAL", tmp->name, "int2float(" + s->name + ")");
             return tmp;
-        } else if (type == "int") {
-            emit("=", tmp->name, "char2int(" + s->name + ")");
+        } else if (type == "CHAR") {
+            emit("EQUAL", tmp->name, "int2char(" + s->name + ")");
+            return tmp;
+        }
+        return s;
+    } else if (s->type->type == "CHAR") {
+        if (type == "FLOAT") {
+            emit("EQUAL", tmp->name, "char2float(" + s->name + ")");
+            return tmp;
+        } else if (type == "INT") {
+            emit("EQUAL", tmp->name, "char2int(" + s->name + ")");
             return tmp;
         }
         return s;
@@ -332,15 +378,15 @@ symbol* convert(symbol* s, string type) {
 }
 
 int typeSize(symType* T) {
-    if (T->type == "int")
+    if (T->type == "INT")
         return size_of_int;
-    else if (T->type == "float")
+    else if (T->type == "FLOAT")
         return size_of_float;
-    else if (T->type == "char")
+    else if (T->type == "CHAR")
         return size_of_char;
-    else if (T->type == "ptr")
+    else if (T->type == "PTR")
         return size_of_ptr;
-    else if (T->type == "arr")
+    else if (T->type == "ARR")
         return T->width * typeSize(T->ptr);
     else
         return 0;
@@ -349,41 +395,22 @@ int typeSize(symType* T) {
 string typeGet(symType* T) {
     if (T == NULL)
         return "null";
-    if (T->type == "void")
+    if (T->type == "VOID")
         return "void";
-    else if (T->type == "int")
+    else if (T->type == "INT")
         return "int";
-    else if (T->type == "float")
+    else if (T->type == "FLOAT")
         return "float";
-    else if (T->type == "char")
+    else if (T->type == "CHAR")
         return "char";
-    else if (T->type == "ptr")
+    else if (T->type == "PTR")
         return "ptr(" + typeGet(T->ptr) + ")";
-    else if (T->type == "arr") {
+    else if (T->type == "ARR") {
         return "arr(" + to_string(T->width) + "," + typeGet(T->ptr) + ")";
-    } else if (T->type == "func")
+    } else if (T->type == "FUNC")
         return "func";
     else if (T->type == "block")
         return "block";
     else
         return "undefined type";
 }
-
-int main() {
-    labelList.clear();
-    tableCount = 0;
-    globalST = new symTable("Global");
-    ST = globalST;
-    parST = NULL;
-    loopName = "";
-
-    yyparse();
-    globalST->update();
-    cout << "\n";
-
-    QArray.print();
-    globalST->print();
-}
-
-// END OF DEFINITION OF CLASS quad
-/// TODO: change emit declaration sign.

@@ -20,10 +20,10 @@ extern char* yytext;
 extern int yyparse();
 
 // defining constants for type sizes
-#define size_of_char     1
-#define size_of_int      4
-#define size_of_float    8
-#define size_of_ptr      4
+#define size_of_char 1
+#define size_of_int 4
+#define size_of_float 8
+#define size_of_ptr 4
 
 //sizes are defined as constants as hardcoded values make the program machine-dependent
 //these values can be changed according to the machine it is being executed on
@@ -41,16 +41,9 @@ struct statement;
 struct Array;
 
 extern symbol* currS;
-
 extern symTable* ST;
-extern symTable* parST;
 extern symTable* globalST;
-
 extern quadArray QArray;
-extern std::string varType;
-extern std::string loopName;
-extern long long int tableCount;
-extern std::vector<label> labelList;
 
 //CLASS DEFINITIONS
 
@@ -60,13 +53,13 @@ class symbol {
     std::string name;    // name of the symbol
     symType* type;       // type of the symbol
     string val;          // initial value
-    string cat ;         // category 
+    string cat;          // category (global, local, parameter)
     int size;            // size of the symbol
     int offset;          // offset of the symbol in ST
     symTable* nestedST;  // ptr to nested symbol table
 
     /******CONSTRUCTOR********/
-    symbol(string name_, string type_ = "int",
+    symbol(string name_, string type_ = "INT",
            symType* ptr = NULL,
            int width = 0);
     symbol* update(symType* ts);
@@ -129,7 +122,7 @@ class symTable {
     symTable* parent;         // ptr to parent symbol table
 
     //activation record map
-    map<string, int> AR ;
+    map<string, int> AR;
 
     //member functions
     symTable(std::string name_ = "NULL");

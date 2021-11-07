@@ -7,8 +7,8 @@ Group:
 %{
     #include <stdio.h>
     #include <string.h>
-    #include "assgn5_19CS30033_19CS30036_translator.h"
-    #include "assgn5_19CS30033_19CS30036.tab.h"
+    #include "assgn6_19CS30033_19CS30036_translator.h"
+    #include "assgn6_19CS30033_19CS30036.tab.h"
 
     extern YYSTYPE yylval;
     extern int yylex();
