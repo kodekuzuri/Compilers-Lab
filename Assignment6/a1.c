@@ -4,7 +4,7 @@ void test(){
     
     int *errVal ;
 
-    printStr("***********************************************************************************************") ;
+    printStr("***********************************************************************************************\n") ;
     
     // checking printStr function 
     printStr("This is a test file for checking the proper functioning of the library functions readInt, printInt and printStr\n") ;
@@ -17,7 +17,7 @@ void test(){
     printStr("The value entered by the user is : ") ;
     printInt(v) ;
 
-    printStr("***********************************************************************************************") ;
+    printStr("\n***********************************************************************************************\n") ;
 
     return ;
 }

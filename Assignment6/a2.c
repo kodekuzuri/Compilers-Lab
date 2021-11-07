@@ -35,7 +35,9 @@ void test(){
     int itrval = factItr(x) ;
 
     printStr("The value of ") ; printInt(x) ; printStr("! calculated iteratively = ") ; printInt(itrval) ;
+    printStr("\n") ;
     printStr("The value of ") ; printInt(x) ; printStr("! calculated recursively = ") ; printInt(recval) ;
+    printStr("\n") ;
 
     return ;
 }
