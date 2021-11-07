@@ -1,4 +1,7 @@
 // test file to check conditional operators and relational operators and array operators
+int printInt(int num);
+int printStr(char *c);
+int readInt(int *eP);
 
 void numT(int x[], int n){
     
