@@ -1,3 +1,8 @@
+int printInt(int num);
+int printStr(char *c);
+int readInt(int *eP);
+
+
 // gcd function 
 int gcd(int a, int b){
 
@@ -5,6 +10,8 @@ int gcd(int a, int b){
     return gcd(b, a%b) ;
 }
 
+void test(){
+    
     int *ee ;
     printStr("Enter 1st number: ") ; 
     
@@ -32,6 +39,7 @@ int gcd(int a, int b){
     printStr("\n") ; 
 
     return ;
+}
 
 int main(){
 
