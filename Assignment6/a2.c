@@ -1,4 +1,7 @@
 // testing file for function calls and other function related operators
+int printInt(int num);
+int printStr(char *c);
+int readInt(int *eP);
 
 // function to calculate factorial iteratively
 
