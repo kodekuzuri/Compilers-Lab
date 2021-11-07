@@ -1,0 +1,96 @@
+
+________________________________________________________________________________THREE ADDRESS CODE(TAC)
+
+0: max: 
+1:   undefined operator>
+2:   goto 6
+3:   goto 7
+4:   return x
+5:   goto 
+6:   return y
+
+7: min: 
+8:   if x < y goto 11
+9:   goto 13
+10:   goto 14
+11:   return x
+12:   goto 
+13:   return y
+
+14: cal: 
+15:   parama
+16:   paramb
+17:   t0 = call max 2
+18:   c = t0
+19:   paramc
+20:   t2 = a + b
+21:   paramt2
+22:   t3 = call min 2
+23:   d = t3
+24:   t5 = c + d
+25:   return t5
+
+26: main: 
+27:   t0 = 10
+28:   a = t0
+29:   t2 = 5
+30:   b = t2
+31:   parama
+32:   paramb
+33:   t4 = call cal 2
+34:   d = t4
+35:   t6 = 0
+36:   return t6
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: Global   Parent Table-Name: NULL
+Name	Type	InVal	Offset	Size	Nes-ST
+max	int		0	4	max
+min	int		4	4	min
+cal	int		8	4	cal
+main	int		12	4	main
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: max   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+x	int		0	4	null
+y	int		4	4	null
+return	int		8	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: min   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+x	int		0	4	null
+y	int		4	4	null
+return	int		8	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: cal   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+a	int		0	4	null
+b	int		4	4	null
+return	int		8	4	null
+c	int		12	4	null
+d	int		16	4	null
+t0	int		20	4	null
+t1	int		24	4	null
+t2	int		28	4	null
+t3	int		32	4	null
+t4	int		36	4	null
+t5	int		40	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+return	int		0	4	null
+a	int		4	4	null
+b	int		8	4	null
+d	int		12	4	null
+t0	int	10	16	4	null
+t1	int		20	4	null
+t2	int	5	24	4	null
+t3	int		28	4	null
+t4	int		32	4	null
+t5	int		36	4	null
+t6	int	0	40	4	null
+________________________________________________________________________________

@@ -1,0 +1,165 @@
+
+________________________________________________________________________________THREE ADDRESS CODE(TAC)
+0:   t0 = 2.300000
+1:   d = t0
+2:   t1 = 10
+
+3: fun: 
+4:   t0 = 1
+5:   m = t0
+
+6: fun.$0: 
+7:   t0 = 2
+8:   n = t0
+
+9: fun.$0.$1: 
+10:   t0 = 3
+11:   o = t0
+
+12: fun.$0.$1.$2: 
+13:   t0 = 4
+14:   p = t0
+
+15: fun.$0.$1.$2.$3: 
+16:   t0 = 1
+17:   t1 = 2
+18:   if t0 < t1 goto 21
+19:   goto 23
+20:   goto 28
+21:   t2 = 1
+22:   goto 26
+23:   t3 = 2
+24:   t4 = t3
+25:   goto 28
+26:   t4 = t2
+27:   goto 28
+28:   q = t4
+
+29: main: 
+30:   t0 = 120
+31:   x = t0
+32:   t1 = 17
+33:   y = t1
+34:   t2 = 'c'
+35:   ch = t2
+36:   t3 = 'a'
+37:   d = t3
+38:   t4 = x + y
+39:   i = t4
+40:   t6 = x - y
+41:   j = t6
+42:   t8 = x * y
+43:   k = t8
+44:   t10 = x / y
+45:   l = t10
+46:   t12 = x % y
+47:   m = t12
+48:   t14 = x & y
+49:   n = t14
+50:   t16 = x | y
+51:   o = t16
+52:   t18 = 2
+53:   t19 = i << t18
+54:   y = t19
+55:   t21 = 1
+56:   t22 = i >> t21
+57:   x = t22
+58:   t24 = 0
+59:   return t24
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: Global   Parent Table-Name: NULL
+Name	Type	InVal	Offset	Size	Nes-ST
+d	char	'a'	0	1	null
+t0	float	2.300000	1	8	null
+s	int		9	4	null
+w	arr(10,int)		13	40	null
+t1	int	10	53	4	null
+c	char		57	1	null
+fun	int		58	4	fun
+main	void		62	0	main
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: fun   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+a	int		0	4	null
+return	int		4	4	null
+m	int		8	4	null
+t0	int	1	12	4	null
+t1	int		16	4	null
+fun.$0	block		20	4	fun.$0
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: fun.$0   Parent Table-Name: fun
+Name	Type	InVal	Offset	Size	Nes-ST
+n	int		0	4	null
+t0	int	2	4	4	null
+t1	int		8	4	null
+fun.$0.$1	block		12	4	fun.$0.$1
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: fun.$0.$1   Parent Table-Name: fun.$0
+Name	Type	InVal	Offset	Size	Nes-ST
+o	int		0	4	null
+t0	int	3	4	4	null
+t1	int		8	4	null
+fun.$0.$1.$2	block		12	4	fun.$0.$1.$2
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: fun.$0.$1.$2   Parent Table-Name: fun.$0.$1
+Name	Type	InVal	Offset	Size	Nes-ST
+p	int		0	4	null
+t0	int	4	4	4	null
+t1	int		8	4	null
+fun.$0.$1.$2.$3	block		12	4	fun.$0.$1.$2.$3
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: fun.$0.$1.$2.$3   Parent Table-Name: fun.$0.$1.$2
+Name	Type	InVal	Offset	Size	Nes-ST
+q	int		0	4	null
+t0	int	1	4	4	null
+t1	int	2	8	4	null
+t2	int	1	12	4	null
+t3	int	2	16	4	null
+t4	int		20	4	null
+t5	int		24	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+x	int	120	0	4	null
+t0	int	120	4	4	null
+y	int	17	8	4	null
+t1	int	17	12	4	null
+i	int		16	4	null
+j	int		20	4	null
+k	int		24	4	null
+l	int		28	4	null
+m	int		32	4	null
+n	int		36	4	null
+o	int		40	4	null
+ch	char	'c'	44	1	null
+t2	char	'c'	45	1	null
+t3	char	'a'	46	1	null
+t4	int		47	4	null
+t5	int		51	4	null
+t6	int		55	4	null
+t7	int		59	4	null
+t8	int		63	4	null
+t9	int		67	4	null
+t10	int		71	4	null
+t11	int		75	4	null
+t12	int		79	4	null
+t13	int		83	4	null
+t14	int		87	4	null
+t15	int		91	4	null
+t16	int		95	4	null
+t17	int		99	4	null
+t18	int	2	103	4	null
+t19	int		107	4	null
+t20	int		111	4	null
+t21	int	1	115	4	null
+t22	int		119	4	null
+t23	int		123	4	null
+t24	int	0	127	4	null
+________________________________________________________________________________

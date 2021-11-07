@@ -14,18 +14,14 @@ extern FILE *yyin;
 extern vector<string> stringList;
 
 // file name parameters
-string IPFname = "assgn6_19CS30033_19CS30036_test";
-string ASMfn = "assgn6_19CS30033_19CS30036_";
+string IPFname;
+string ASMfn;
 
 // map from quads to labels
 map<int, int> Mlabel;
 
 // counter variable to count the number of labels in the asm file
 int countLabel = 0;
-
-// file stream for ASM file
-ofstream fout;
-
 // vector of quads
 vector<quad> Qarr;
 
@@ -35,27 +31,20 @@ void ActivationRec(symTable *S) {
     // l -> local
     int l = -24, p = -20;
 
-    list<symbol>::iterator i = S->table.begin();
-
-    while (i != S->table.end()) {
-        if (i->name == "return") continue;
-
+    for (auto it = S->table.begin(); it != S->table.end(); it++) {
+        if (it->name == "return") continue;
         // checking category
-        else if (i->cat == "param") {  // parameter
+        else if (it->cat == "param") {  // parameter
             // assigning p (param)
-            S->AR[i->name] = p;
+            S->AR[it->name] = p;
             // adding entry size to p
-            p = p + i->size;
-        }
-
-        else {  // case for local symbols
+            p = p + it->size;
+        } else {  // case for local symbols
             // assigning l (local)
-            S->AR[i->name] = l;
+            S->AR[it->name] = l;
             // subtracting entry size from l
-            l = l - i->size;
+            l = l - it->size;
         }
-
-        i++;
     }
     return;
 }
@@ -78,6 +67,7 @@ void ASMgenerate() {
         }
         ++i;
     }
+    cout << __LINE__ << endl;
 
     // traversing the label map and mapping quads to labels
     map<int, int>::iterator j = Mlabel.begin();
@@ -86,7 +76,7 @@ void ASMgenerate() {
         ctr++;
         j++;
     }
-
+    cout << __LINE__ << endl;
     // list of tables
     list<symTable *> TList;
     // collect all tables
@@ -96,21 +86,21 @@ void ASMgenerate() {
     }
     // traversing nested tablelist and computing activation record
     for (auto it = TList.begin(); it != TList.end(); it++) {
+        cout << __LINE__ << endl;
         ActivationRec(*it);
     }
-
+    cout << __LINE__ << endl;
     // stream for assembly file (.s)
     ofstream sout;
     // open .s for writing
     sout.open(ASMfn.c_str(), ios::out);
 
-    list<symbol>::iterator m = ST->table.begin();
-
     sout << "\t.file\t\"test.c\""
          << "\n";
+    cout << __LINE__ << endl;
 
     // writing .globl for all global variables (skip functions for now)
-    while (m != ST->table.end()) {
+    for (auto m = ST->table.begin(); m != ST->table.end(); m++) {
         string cy = m->cat;         // category
         string ch = m->type->type;  // type
         string nm = m->name;        // name
@@ -155,7 +145,6 @@ void ASMgenerate() {
                 }
             }
         }
-        m++;
     }
 
     // input strings being outputted
@@ -176,13 +165,314 @@ void ASMgenerate() {
     // start
     sout << "\t.text	"
          << "\n";
-    // vector for parameters
-    vector<string> PMs;
-    // map
-    map<string, int> mp;
 
-    vector<quad>::iterator a = Qarr.begin();
-    while (a != Qarr.end()) {
+    vector<string> params;
+    std::map<string, int> theMap;
+    for (vector<quad>::iterator it = Qarr.begin(); it != Qarr.end(); it++) {
+        if (Mlabel.count(it - Qarr.begin())) {
+            sout << ".L" << (2 * countLabel + Mlabel.at(it - Qarr.begin()) + 2) << ": " << endl;
+        }
+        string op = it->op;
+        string result = it->res;
+        string arg1 = it->arg1;
+        string arg2 = it->arg2;
+        string s = arg2;
+
+        // if param -> add to the param list
+        if (op == "PARAM") {
+            params.push_back(result);
+            cout << "here" << endl;
+        } else {
+            sout << "\t";
+
+            // Binary Operations
+            // addition operation
+            if (op == "ADD") {
+                bool flag = true;
+                if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+')))
+                    flag = false;
+                else {
+                    char *p;
+                    strtol(s.c_str(), &p, 10);
+                    if (*p == 0)
+                        flag = true;
+                    else
+                        flag = false;
+                }
+                if (flag) {
+                    sout << "addl \t$" << atoi(arg2.c_str()) << ", " << ST->AR[arg1] << "(%rbp)";
+                } else {
+                    sout << "movl \t" << ST->AR[arg1] << "(%rbp), "
+                         << "%eax" << endl;
+                    sout << "\tmovl \t" << ST->AR[arg2] << "(%rbp), "
+                         << "%edx" << endl;
+                    sout << "\taddl \t%edx, %eax\n";
+                    sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+                }
+            }
+            // subtract operation
+            else if (op == "SUB") {
+                sout << "movl \t" << ST->AR[arg1] << "(%rbp), "
+                     << "%eax" << endl;
+                sout << "\tmovl \t" << ST->AR[arg2] << "(%rbp), "
+                     << "%edx" << endl;
+                sout << "\tsubl \t%edx, %eax\n";
+                sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+            }
+            // multiplcation operator
+            else if (op == "MULT") {
+                sout << "movl \t" << ST->AR[arg1] << "(%rbp), "
+                     << "%eax" << endl;
+                bool flag = true;
+                if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+')))
+                    flag = false;
+                else {
+                    char *p;
+                    strtol(s.c_str(), &p, 10);
+                    if (*p == 0)
+                        flag = true;
+                    else
+                        flag = false;
+                }
+                if (flag) {
+                    sout << "\timull \t$" << atoi(arg2.c_str()) << ", "
+                         << "%eax" << endl;
+                    symTable *t = ST;
+                    string val;
+                    for (list<symbol>::iterator it = t->table.begin(); it != t->table.end(); it++) {
+                        if (it->name == arg1) val = it->val;
+                    }
+                    theMap[result] = atoi(arg2.c_str()) * atoi(val.c_str());
+                } else
+                    sout << "\timull \t" << ST->AR[arg2] << "(%rbp), "
+                         << "%eax" << endl;
+                sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+            }
+            // divide operation
+            else if (op == "DIVIDE") {
+                sout << "movl \t" << ST->AR[arg1] << "(%rbp), "
+                     << "%eax" << endl;
+                sout << "\tcltd" << endl;
+                sout << "\tidivl \t" << ST->AR[arg2] << "(%rbp)" << endl;
+                sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+            }
+
+            // Bit Operators /* Ignored */
+            else if (op == "MODOP")
+                sout << result << " = " << arg1 << " % " << arg2;
+            else if (op == "XOR")
+                sout << result << " = " << arg1 << " ^ " << arg2;
+            else if (op == "INOR")
+                sout << result << " = " << arg1 << " | " << arg2;
+            else if (op == "BAND")
+                sout << result << " = " << arg1 << " & " << arg2;
+            // Shift Operations /* Ignored */
+            else if (op == "LEFTOP")
+                sout << result << " = " << arg1 << " << " << arg2;
+            else if (op == "RIGHTOP")
+                sout << result << " = " << arg1 << " >> " << arg2;
+
+            // copy
+            else if (op == "EQUAL") {
+                s = arg1;
+                bool flag = true;
+                if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+')))
+                    flag = false;
+                else {
+                    char *p;
+                    strtol(s.c_str(), &p, 10);
+                    if (*p == 0)
+                        flag = true;
+                    else
+                        flag = false;
+                }
+                if (flag)
+                    sout << "movl\t$" << atoi(arg1.c_str()) << ", "
+                         << "%eax" << endl;
+                else
+                    sout << "movl\t" << ST->AR[arg1] << "(%rbp), "
+                         << "%eax" << endl;
+                sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+            } else if (op == "EQUALSTR") {
+                sout << "movq \t$.LC" << arg1 << ", " << ST->AR[result] << "(%rbp)";
+            } else if (op == "EQUALCHAR") {
+                sout << "movb\t$" << atoi(arg1.c_str()) << ", " << ST->AR[result] << "(%rbp)";
+            }
+
+            // Relational Operations
+            else if (op == "EQOP") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tje .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "NEOP") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tjne .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "LT") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tjl .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "GT") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tjg .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "GE") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tjge .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "LE") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tcmpl\t" << ST->AR[arg2] << "(%rbp), %eax\n";
+                sout << "\tjle .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            } else if (op == "GOTOOP") {
+                sout << "jmp .L" << (2 * countLabel + Mlabel.at(atoi(result.c_str())) + 2);
+            }
+
+            // Unary Operators
+            else if (op == "ADDRESS") {
+                sout << "leaq\t" << ST->AR[arg1] << "(%rbp), %rax\n";
+                sout << "\tmovq \t%rax, " << ST->AR[result] << "(%rbp)";
+            } else if (op == "PTRR") {
+                sout << "movl\t" << ST->AR[arg1] << "(%rbp), %eax\n";
+                sout << "\tmovl\t(%eax),%eax\n";
+                sout << "\tmovl \t%eax, " << ST->AR[result] << "(%rbp)";
+            } else if (op == "PTRL") {
+                sout << "movl\t" << ST->AR[result] << "(%rbp), %eax\n";
+                sout << "\tmovl\t" << ST->AR[arg1] << "(%rbp), %edx\n";
+                sout << "\tmovl\t%edx, (%eax)";
+            } else if (op == "UMINUS") {
+                sout << "negl\t" << ST->AR[arg1] << "(%rbp)";
+            } else if (op == "BNOT")
+                sout << result << " = ~" << arg1;
+            else if (op == "LNOT")
+                sout << result << " = !" << arg1;
+            else if (op == "ARRR") {
+                int off = 0;
+                off = theMap[arg2] * (-1) + ST->AR[arg1];
+                sout << "movq\t" << off << "(%rbp), "
+                     << "%rax" << endl;
+                sout << "\tmovq \t%rax, " << ST->AR[result] << "(%rbp)";
+            } else if (op == "ARRL") {
+                int off = 0;
+                off = theMap[arg1] * (-1) + ST->AR[result];
+                sout << "movq\t" << ST->AR[arg2] << "(%rbp), "
+                     << "%rdx" << endl;
+                sout << "\tmovq\t"
+                     << "%rdx, " << off << "(%rbp)";
+            } else if (op == "RETURN") {
+                if (result != "")
+                    sout << "movl\t" << ST->AR[result] << "(%rbp), "
+                         << "%eax";
+                else
+                    sout << "nop";
+            } else if (op == "PARAM") {
+                params.push_back(result);
+            }
+
+            // call a function
+            else if (op == "CALL") {
+                // Function Table
+                symTable *t = globalST->lookup(arg1)->nestedST;
+                int i, j = 0;  // index
+                for (list<symbol>::iterator it = t->table.begin(); it != t->table.end(); it++) {
+                    i = distance(t->table.begin(), it);
+                    if (it->cat == "param") {
+                        if (j == 0) {
+                            // the first parameter to the function
+                            sout << "movl \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%eax" << endl;
+                            sout << "\tmovq \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%rdi" << endl;
+                            j++;
+                        } else if (j == 1) {
+                            // the second parameter to the function
+                            sout << "movl \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%eax" << endl;
+                            sout << "\tmovq \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%rsi" << endl;
+                            j++;
+                        } else if (j == 2) {
+                            // the third parameter to the function
+                            sout << "movl \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%eax" << endl;
+                            sout << "\tmovq \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%rdx" << endl;
+                            j++;
+                        } else if (j == 3) {
+                            // the fourth parameter to the function
+                            sout << "movl \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%eax" << endl;
+                            sout << "\tmovq \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%rcx" << endl;
+                            j++;
+                        } else {
+                            sout << "\tmovq \t" << ST->AR[params[i]] << "(%rbp), "
+                                 << "%rdi" << endl;
+                        }
+                    } else
+                        break;
+                }
+                params.clear();
+                sout << "\tcall\t" << arg1 << endl;
+                sout << "\tmovl\t%eax, " << ST->AR[result] << "(%rbp)";
+            }
+
+            else if (op == "FUNC") {
+                // prologue of a function
+                sout << ".globl\t" << result << "\n";
+                sout << "\t.type\t" << result << ", @function\n";
+                sout << result << ": \n";
+                sout << ".LFB" << countLabel << ":" << endl;
+                sout << "\t.cfi_startproc" << endl;
+                sout << "\tpushq \t%rbp" << endl;
+                sout << "\t.cfi_def_cfa_offset 8" << endl;
+                sout << "\t.cfi_offset 5, -8" << endl;
+                sout << "\tmovq \t%rsp, %rbp" << endl;
+                sout << "\t.cfi_def_cfa_register 5" << endl;
+                ST = globalST->lookup(result)->nestedST;
+                sout << "\tsubq\t$" << ST->table.back().offset + 24 << ", %rsp" << endl;
+
+                // Function Table
+                symTable *t = ST;
+                int i = 0;
+                for (list<symbol>::iterator it = t->table.begin(); it != t->table.end(); it++) {
+                    if (it->cat == "param") {
+                        if (i == 0) {
+                            sout << "\tmovq\t%rdi, " << ST->AR[it->name] << "(%rbp)";
+                            i++;
+                        } else if (i == 1) {
+                            sout << "\n\tmovq\t%rsi, " << ST->AR[it->name] << "(%rbp)";
+                            i++;
+                        } else if (i == 2) {
+                            sout << "\n\tmovq\t%rdx, " << ST->AR[it->name] << "(%rbp)";
+                            i++;
+                        } else if (i == 3) {
+                            sout << "\n\tmovq\t%rcx, " << ST->AR[it->name] << "(%rbp)";
+                            i++;
+                        }
+                    } else
+                        break;
+                }
+            }
+
+            // epilogue of a function
+            // function ends
+            else if (op == "FUNCEND") {
+                sout << "leave\n";
+                sout << "\t.cfi_restore 5\n";
+                sout << "\t.cfi_def_cfa 4, 4\n";
+                sout << "\tret\n";
+                sout << "\t.cfi_endproc" << endl;
+                sout << ".LFE" << countLabel++ << ":" << endl;
+                sout << "\t.size\t" << result << ", .-" << result;
+            } else
+                sout << "op";
+            sout << endl;
+        }
+    }
+    // footnote
+    /*
+    for (auto a = Qarr.begin(); a != Qarr.end(); a++) {
         int zz = a - Qarr.begin();
         if (Mlabel.count(zz) != 0) {
             int labval = Mlabel.at(zz) + 2 * countLabel + 2;
@@ -191,7 +481,10 @@ void ASMgenerate() {
         }
         string a1 = a->arg1, a2 = a->arg2, op = a->op, res = a->res;
 
-        if (op != "PARAM") {
+        if (op == "PARAM") {
+            PMs.push_back(res);
+            cout << "pushing into params vector: " << res << endl;
+        } else if (op != "PARAM") {
             // Operators that do not need processing being handled first
             // (Bit and Shift operations)
             sout << "\t";
@@ -306,8 +599,6 @@ void ASMgenerate() {
 
                 sout << "\tmovl \t%eax, " << ST->AR[res] << "(%rbp)";
             }
-
-            // division
             else if (op == "DIV") {
                 sout << "movl \t" << ST->AR[a1] << "(%rbp), "
                      << "%eax"
@@ -317,9 +608,8 @@ void ASMgenerate() {
                 sout << "\tidivl \t" << ST->AR[a2] << "(%rbp)"
                      << "\n";
                 sout << "\tmovl \t%eax, " << ST->AR[res] << "(%rbp)";
-            }
-
-            else if (op == " EQUAL") {
+            } else if (op == " EQUAL") {
+                cout << "here" << endl;
                 if (((a1[0] != '-') && (a1[0] != '+') && !isdigit(a1[0])) || a1.size() == 0) {
                     sout << "movl\t" << ST->AR[a1] << "(%rbp), "
                          << "%eax"
@@ -343,9 +633,7 @@ void ASMgenerate() {
                     }
                 }
                 sout << "\tmovl \t%eax, " << ST->AR[res] << "(%rbp)";
-            }
-
-            else if (op == "EQUALSTR") {
+            } else if (op == "EQUALSTR") {
                 sout << "movq \t$.LC" << a1 << ", " << ST->AR[res] << "(%rbp)";
             }
 
@@ -465,33 +753,23 @@ void ASMgenerate() {
                          << "%eax";
 
             }
-
             // if parameter push into the vector for parameters
             else if (op == "PARAM") {
                 PMs.push_back(res);
-            }
-
-            // a = b[c]
-            else if (op == "ARRR") {
+            } else if (op == "ARRR") {
                 int vv = ST->AR[a1] - mp[a2];
                 sout << "movq\t" << vv << "(%rbp), "
                      << "%rax"
                      << "\n";
                 sout << "\tmovq \t%rax, " << ST->AR[res] << "(%rbp)";
-            }
-
-            // a[b] = c
-            else if (op == "ARRL") {
+            } else if (op == "ARRL") {
                 int vv = ST->AR[res] - mp[a1];
                 sout << "movq\t" << ST->AR[a2] << "(%rbp), "
                      << "%rdx"
                      << "\n";
                 sout << "\tmovq\t"
                      << "%rdx, " << vv << "(%rbp)";
-            }
-
-            // function call
-            else if (op == "CALL") {
+            } else if (op == "CALL") {
                 // copying function table locally
                 symTable *TT = globalST->lookup(a1)->nestedST;
 
@@ -559,10 +837,7 @@ void ASMgenerate() {
                         break;
                     k++;
                 }
-            }
-
-            // function start
-            else if (op == "FUNC") {
+            } else if (op == "FUNC") {
                 // function start program
 
                 sout << ".globl\t" << res << "\n";
@@ -629,10 +904,7 @@ void ASMgenerate() {
                     } else
                         break;
                 }
-            }
-
-            // function end
-            else if (op == "FUNCEND") {
+            } else if (op == "FUNCEND") {
                 sout << "leave"
                      << "\n";
                 sout << "\t.cfi_restore 5"
@@ -647,19 +919,20 @@ void ASMgenerate() {
                      << "\n";
                 countLabel++;
                 sout << "\t.size\t" << res << ", .-" << res;
-            }
-
-            // operator not included in definition
-            else
-                sout << "op";
+            } else
+                sout << op << " " << op.size();
 
             // newline
             sout << "\n";
 
-        } else  // if it is a parameter, then push into vector of parameters
+        } else {
             PMs.push_back(res);
-        a++;  // incrementing the iterator
+        }
     }
+ */
+    sout << "\t.ident\t	\"Compiled by 19CS30033\"\n";
+    sout << "\t.section\t.note.GNU-stack,\"\",@progbits\n";
+    sout.close();
 }
 
 // printing overloaded operator
@@ -677,12 +950,12 @@ int main(int argc, char *argv[]) {
     ST = globalST;
     // setting parser for taking input and opening file
     yyin = fopen(IPFname.c_str(), "r");
-    // parse
     yyparse();
-    // updating + printing global table, and generating ASM
     globalST->update();
     globalST->print();
     QArray.print();
+
     ASMgenerate();
+
     return 0;
 }

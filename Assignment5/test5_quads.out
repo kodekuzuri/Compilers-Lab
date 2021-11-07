@@ -1,0 +1,71 @@
+
+________________________________________________________________________________THREE ADDRESS CODE(TAC)
+
+0: main: 
+1:   t0 = 2
+2:   flag = t0
+3:   t1 = 0
+4:   if flag == t1 goto 7
+5:   goto 13
+6:   goto 25
+
+7: main.$0: 
+8:   t0 = 100
+9:   a = t0
+10:   t2 = 25
+11:   b = t2
+12:   goto 25
+
+13: main.$1: 
+14:   t0 = 20
+15:   a = t0
+16:   t2 = 1
+17:   if flag == t2 goto 20
+18:   goto 23
+19:   goto 25
+20:   t3 = 5
+21:   b = t3
+22:   goto 25
+23:   t5 = 4
+24:   b = t5
+25:   t2 = 0
+26:   return t2
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: Global   Parent Table-Name: NULL
+Name	Type	InVal	Offset	Size	Nes-ST
+main	int		0	4	main
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+return	int		0	4	null
+a	int		4	4	null
+b	int		8	4	null
+g	int		12	4	null
+flag	int	2	16	4	null
+t0	int	2	20	4	null
+t1	int	0	24	4	null
+main.$0	block		28	4	main.$0
+main.$1	block		32	4	main.$1
+t2	int	0	36	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.$0   Parent Table-Name: main
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int	100	0	4	null
+t1	int		4	4	null
+t2	int	25	8	4	null
+t3	int		12	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.$1   Parent Table-Name: main
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int	20	0	4	null
+t1	int		4	4	null
+t2	int	1	8	4	null
+t3	int	5	12	4	null
+t4	int		16	4	null
+t5	int	4	20	4	null
+t6	int		24	4	null
+________________________________________________________________________________

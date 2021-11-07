@@ -1,0 +1,141 @@
+
+________________________________________________________________________________THREE ADDRESS CODE(TAC)
+0:   t0 = 0
+1:   c = t0
+2:   t1 = 10
+3:   d = t1
+
+4: main: 
+5:   t0 = 5
+6:   t1 = 5
+7:   t2 = 5
+8:   t3 = 10
+9:   i = t3
+10:   t5 = 20
+11:   j = t5
+12:   t7 = 30
+13:   k = t7
+
+14: main.WHILE$0: 
+15:   if i < j goto 17
+16:   goto 24
+17:   t0 = i * 4
+18:   a[t0] = i
+19:   t2 = i
+20:   i = i + 1
+21:   t3 = j
+22:   j = j + 1
+23:   goto 15
+
+24: main.FOR$1: 
+25:   t0 = 0
+26:   i = t0
+27:   t2 = 5
+28:   if i < t2 goto 33
+29:   goto 60
+30:   t3 = i
+31:   i = i + 1
+32:   goto 27
+
+33: main.FOR$1.FOR$2: 
+34:   t0 = 0
+35:   j = t0
+36:   t2 = 5
+37:   if j < t2 goto 42
+38:   goto 30
+39:   t3 = j
+40:   j = j + 1
+41:   goto 36
+
+42: main.FOR$1.FOR$2.FOR$3: 
+43:   t0 = 0
+44:   k = t0
+45:   t2 = 5
+46:   if k < t2 goto 51
+47:   goto 39
+48:   t3 = k
+49:   k = k + 1
+50:   goto 45
+51:   t4 = i * 20
+52:   t6 = j * 4
+53:   t5 = t4 + t6
+54:   t7 = i + j
+55:   t8 = t7 + k
+56:   b[t5] = t8
+57:   goto 48
+58:   goto 39
+59:   goto 30
+60:   t9 = 1
+61:   return t9
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: Global   Parent Table-Name: NULL
+Name	Type	InVal	Offset	Size	Nes-ST
+a	arr(5,int)		0	20	null
+b	arr(5,arr(5,int))		20	100	null
+c	int	0	120	4	null
+t0	int	0	124	4	null
+d	int	10	128	4	null
+t1	int	10	132	4	null
+main	int		136	4	main
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main   Parent Table-Name: Global
+Name	Type	InVal	Offset	Size	Nes-ST
+return	int		0	4	null
+t0	int	5	4	4	null
+t1	int	5	8	4	null
+t2	int	5	12	4	null
+i	int		16	4	null
+j	int		20	4	null
+k	int		24	4	null
+t3	int	10	28	4	null
+t4	int		32	4	null
+t5	int	20	36	4	null
+t6	int		40	4	null
+t7	int	30	44	4	null
+t8	int		48	4	null
+main.WHILE$0	block		52	4	main.WHILE$0
+main.FOR$1	block		56	4	main.FOR$1
+t9	int	1	60	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.WHILE$0   Parent Table-Name: main
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int		0	4	null
+t1	int		4	4	null
+t2	int		8	4	null
+t3	int		12	4	null
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.FOR$1   Parent Table-Name: main
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int	0	0	4	null
+t1	int		4	4	null
+t2	int	5	8	4	null
+t3	int		12	4	null
+main.FOR$1.FOR$2	block		16	4	main.FOR$1.FOR$2
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.FOR$1.FOR$2   Parent Table-Name: main.FOR$1
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int	0	0	4	null
+t1	int		4	4	null
+t2	int	5	8	4	null
+t3	int		12	4	null
+main.FOR$1.FOR$2.FOR$3	block		16	4	main.FOR$1.FOR$2.FOR$3
+________________________________________________________________________________
+________________________________________________________________________________
+Table-Name: main.FOR$1.FOR$2.FOR$3   Parent Table-Name: main.FOR$1.FOR$2
+Name	Type	InVal	Offset	Size	Nes-ST
+t0	int	0	0	4	null
+t1	int		4	4	null
+t2	int	5	8	4	null
+t3	int		12	4	null
+t4	int		16	4	null
+t5	int		20	4	null
+t6	int		24	4	null
+t7	int		28	4	null
+t8	int		32	4	null
+t9	int		36	4	null
+________________________________________________________________________________

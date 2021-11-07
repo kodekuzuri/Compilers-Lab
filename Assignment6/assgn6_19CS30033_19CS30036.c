@@ -9,6 +9,8 @@
  *  
  */
 
+#include <stdio.h>
+
 #include "myl.h"
 #define BUFFSIZE 100
 #define INT32_MAX +2147483647
@@ -87,16 +89,21 @@ int printInt(int n) {
  *        if the input is out of range(INT32_MIN, INT32_MAX), 
  *        it returns ERROR
  */
-int readInt(int *n) {
+int readInt(int *ep) {
     char buff[BUFFSIZE];
     int ret;
+    int res = 0;
+
     __asm__ __volatile__(
         "movl $0, %%eax\n\t"  // sys_read
         "movq $0, %%rdi\n\t"  // stdin
         "syscall \n\t"
         : "=a"(ret)                   // output
         : "S"(buff), "d"(BUFFSIZE));  // input
-    if (ret <= 1) return ERR;         // system-error or LF or EOF
+    if (ret <= 1) {
+        *ep = ERR;
+        return res;
+    }  // system-error or LF or EOF
 
     int sgn = 1;
     int i = 0;
@@ -110,23 +117,28 @@ int readInt(int *n) {
 
     // check for more than 12 characters
     if ((sgn == -1 && ret > 12) ||
-        (sgn == 1 && ret > 11) || (buff[0] == '+' && ret > 12))
-        return ERR;
+        (sgn == 1 && ret > 11) || (buff[0] == '+' && ret > 12)) {
+        *ep = ERR;
+        return res;
+    }
 
     // '\0' in the end (not-required)
     buff[ret - 1] = 0;
-    int res = 0;
-
     // convert the string to integer
     for (; i < ret - 1; i++) {
-        if (!(buff[i] >= '0' && buff[i] <= '9'))
-            return ERR;
+        if (!(buff[i] >= '0' && buff[i] <= '9')) {
+            *ep = ERR;
+            return res;
+        }
         res = res * 10LL + (buff[i] - '0') * sgn;
         // check for overflow
-        if (res > INT32_MAX || res < INT32_MIN) return ERR;
+        if (res > INT32_MAX || res < INT32_MIN) {
+            *ep = ERR;
+            return res;
+        }
     }
-    *n = res;
-    return OK;
+    *ep = OK;
+    return res;
 }
 
 /**

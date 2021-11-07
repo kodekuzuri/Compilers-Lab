@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "iostream": "cpp",
+        "system_error": "cpp",
+        "myl.h": "c",
+        "ostream": "c"
+    }
+}

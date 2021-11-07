@@ -11,7 +11,6 @@ Group:
     #include "assgn6_19CS30033_19CS30036.tab.h"
 
     extern YYSTYPE yylval;
-    extern int yylex();
     extern int yylineno;
 %}
 
@@ -42,7 +41,7 @@ ESCAPE_SEQ             [\\][\'\"\?\\abfnrtv]
 C_CHAR                 {ESCAPE_SEQ}|[^("\'"|"\\"|"\n")]
 C_CHAR_SEQ             {C_CHAR}+
 CHAR_CONSTANT          \'({C_CHAR_SEQ})\'
-S_CHAR                 {ESCAPE_SEQ}|[^("\n"|"\""|"\\")]
+S_CHAR                 [^\"\\\n]|{ESCAPE_SEQ}
 S_CHAR_SEQ             {S_CHAR}+
 S_LITERAL              \"({S_CHAR_SEQ})?\"
 WS                     [ \t\n\v\f]

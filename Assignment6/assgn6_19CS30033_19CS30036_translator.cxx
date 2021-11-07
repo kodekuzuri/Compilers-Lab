@@ -308,7 +308,7 @@ expression* convertBool2Int(expression* e) {
 expression* convertInt2Bool(expression* e) {
     if (e->type != "BOOL") {
         e->falseList = makelist(nextInstruction());
-        emit("EQOP", e->loc->name, "0");
+        emit("EQUAL", e->loc->name, "0");
         e->trueList = makelist(nextInstruction());
         emit("GOTOOP", "");
     }

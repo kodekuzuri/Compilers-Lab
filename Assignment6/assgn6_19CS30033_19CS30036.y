@@ -170,7 +170,7 @@ constant:
 	| CHARACTER_CONSTANT       	  			
 	{                                                                          
 		$$ = gentemp(new symType("CHAR"),$1);
-		emit("EQUAL", $$->name, $1);
+		emit("EQUALCHAR", $$->name, string($1));
 	}
 	;
 
@@ -212,10 +212,10 @@ postfix_expression: primary_expression
 	{ 	
 		
 		$$ = new Array();
-
 		$$->Sarr = $1->loc;
 		$$->type = $1->type->ptr;
-		$$->loc = gentemp(new symType("INT"));     	                          
+		$$->loc = gentemp(new symType("INT")); 
+		$$->artype = "ARR";    	                          
 		
 		if($1->artype == "ARR") {			                                
 			symbol* t = gentemp(new symType("INT"));
@@ -229,6 +229,7 @@ postfix_expression: primary_expression
 			emit("MULT", $$->loc->name, $3->loc->name, str);
 		}
 	}
+	| postfix_expression '(' ')' {}
 	| postfix_expression '(' argument_expression_list ')'       
 	{ 
 		$$ = new Array();	
@@ -247,8 +248,8 @@ postfix_expression: primary_expression
 	}
 	| postfix_expression DECREMENT                 
 	{
-		$$=new Array();	
-		$$->Sarr=gentemp($1->Sarr->type);
+		$$ = new Array();	
+		$$->Sarr = gentemp($1->Sarr->type);
 		emit("EQUAL", $$->Sarr->name, $1->Sarr->name);
 		emit("SUB", $1->Sarr->name, $1->Sarr->name, "1");	
 	}
@@ -318,18 +319,22 @@ unary_expression:
 			
 			case '-':				    
 				$$->Sarr = gentemp(new symType($2->Sarr->type->type));
-				emit("UMNINUS", $$->Sarr->name, $2->Sarr->name);
+				emit("UMINUS", $$->Sarr->name, $2->Sarr->name);
 				break;
 			
 			case '~':                    
 				$$->Sarr = gentemp(new symType($2->Sarr->type->type));
-				emit("UNOT", $$->Sarr->name, $2->Sarr->name);
+				emit("BNOT", $$->Sarr->name, $2->Sarr->name);
 				break;
 			
 			case '!':				 
 				$$->Sarr = gentemp(new symType($2->Sarr->type->type));
-				emit("BNOT", $$->Sarr->name, $2->Sarr->name);
+				emit("LNOT", $$->Sarr->name, $2->Sarr->name);
 				break;
+				
+			default:
+				break;
+			
 		}
 	}
 	| SIZEOF unary_expression  {  }
@@ -443,7 +448,7 @@ shift_expression: additive_expression   { $$=$1; }
 		{		
 			$$ = new expression();		
 			$$->loc = gentemp(new symType("INT"));
-			emit("LSHIFT", $$->loc->name, $1->loc->name, $3->loc->name);		
+			emit("LEFTOP", $$->loc->name, $1->loc->name, $3->loc->name);		
 		}
 	}
 	| shift_expression RIGHTSHIFT additive_expression
@@ -454,7 +459,7 @@ shift_expression: additive_expression   { $$=$1; }
 		{			
 			$$ = new expression();	
 			$$->loc = gentemp(new symType("INT"));
-			emit("RSHIFT", $$->loc->name, $1->loc->name, $3->loc->name);			
+			emit("RIGHTOP", $$->loc->name, $1->loc->name, $3->loc->name);			
 		}
 	}
 	;
@@ -499,7 +504,7 @@ relational_expression: shift_expression   { $$=$1; }
 			$$->type = "BOOL";
 			$$->trueList = makelist(nextInstruction());
 			$$->falseList = makelist(nextInstruction()+1);
-			emit("LTE", "", $1->loc->name, $3->loc->name);
+			emit("LE", "", $1->loc->name, $3->loc->name);
 			emit("GOTOOP", "");
 		}		
 	}
@@ -515,7 +520,7 @@ relational_expression: shift_expression   { $$=$1; }
 			$$->type = "BOOL";
 			$$->trueList = makelist(nextInstruction());
 			$$->falseList = makelist(nextInstruction()+1);
-			emit("GTE", "", $1->loc->name, $3->loc->name);
+			emit("GE", "", $1->loc->name, $3->loc->name);
 			emit("GOTOOP", "");
 		}
 	}
@@ -568,7 +573,7 @@ and_expression: equality_expression  { $$=$1; }
 			$$ = new expression();
 			$$->type = "NONBOOL";
 			$$->loc = gentemp(new symType("INT"));
-			emit("BITAND", $$->loc->name, $1->loc->name, $3->loc->name);        }
+			emit("BAND", $$->loc->name, $1->loc->name, $3->loc->name);        }
 	}
 	;
 
@@ -601,7 +606,7 @@ inclusive_or_expression: exclusive_or_expression { $$=$1; }
 			$$ = new expression();
 			$$->type = "NONBOOL";
 			$$->loc = gentemp(new symType("INT"));
-			emit("BITOR", $$->loc->name, $1->loc->name, $3->loc->name);
+			emit("INOR", $$->loc->name, $1->loc->name, $3->loc->name);
 		} 
 	}
 	;
@@ -660,7 +665,7 @@ conditional_expression: logical_or_expression {$$=$1;}
 
 assignment_expression: conditional_expression {$$=$1;}          
 	| unary_expression assignment_operator assignment_expression 
-	 {
+	{
 		if($1->artype=="ARR")           
 		{
 			$3->loc = convert($3->loc, $1->type->type);
