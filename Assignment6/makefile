@@ -51,5 +51,5 @@ clean:
 	assgn6_19CS30033_19CS30036.tab.h assgn6_19CS30033_19CS30036.tab.o \
 	assgn6_19CS30033_19CS30036_translator.o assgn6_19CS30033_19CS30036_translator.h.gch \
 	assgn6_19CS30033_19CS30036.o assgn6_19CS30033_19CS30036_target_translator.o \
-	libassgn6.a test1.s test1.o test1_quads1.out assgn6_19CS30033_19CS30036.output \
-	test*.o test[1-5].s test[1-5] test1_quads.out
+	libassgn6.a assgn6_19CS30033_19CS30036.output \
+	test*.o test[1-5].s test[1-5] test[1-5]_quads.out
