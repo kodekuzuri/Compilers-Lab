@@ -1,24 +1,22 @@
 assembly: tinyC libassgn6.a
-	./tinyC test1.c > test1_quads1.out
-	# ./tinyC test2.c > test2_quads1.out
-	# ./tinyC test3.c > test3_quads1.out
-	# ./tinyC test4.c > test4_quads1.out
-	# ./tinyC test5.c > test5_quads1.out
+	./tinyC test1.c > test1_quads.out
+	./tinyC test2.c > test2_quads.out
+	./tinyC test3.c > test3_quads.out
+	./tinyC test4.c > test4_quads.out
+	./tinyC test5.c > test5_quads.out
 
 	gcc -c test1.s
-	# gcc -c test2.s
-	# gcc -c test3.s
-	# gcc -c test4.s
-	# gcc -c test5.s
+	gcc -c test2.s
+	gcc -c test3.s
+	gcc -c test4.s
+	gcc -c test5.s
 
 	gcc test1.o -o test1 -L. -lassgn6 -no-pie
-	# gcc test2.o -o test2 -L. -lassgn6 -no-pie
-	# gcc test3.o -o test3 -L. -lassgn6 -no-pie
-	# gcc test4.o -o test4 -L. -lassgn6 -no-pie
-	# gcc test5.o -o test5 -L. -lassgn6 -no-pie
+	gcc test2.o -o test2 -L. -lassgn6 -no-pie
+	gcc test3.o -o test3 -L. -lassgn6 -no-pie
+	gcc test4.o -o test4 -L. -lassgn6 -no-pie
+	gcc test5.o -o test5 -L. -lassgn6 -no-pie
 	
-
-
 libassgn6.a: assgn6_19CS30033_19CS30036.c myl.h
 	gcc -c assgn6_19CS30033_19CS30036.c
 	ar -rcs libassgn6.a assgn6_19CS30033_19CS30036.o 
@@ -53,4 +51,5 @@ clean:
 	assgn6_19CS30033_19CS30036.tab.h assgn6_19CS30033_19CS30036.tab.o \
 	assgn6_19CS30033_19CS30036_translator.o assgn6_19CS30033_19CS30036_translator.h.gch \
 	assgn6_19CS30033_19CS30036.o assgn6_19CS30033_19CS30036_target_translator.o \
-	libassgn6.a test1.s test1.o test1_quads1.out assgn6_19CS30033_19CS30036.output
+	libassgn6.a test1.s test1.o test1_quads1.out assgn6_19CS30033_19CS30036.output \
+	test*.o test[1-5].s test[1-5] test1_quads.out
